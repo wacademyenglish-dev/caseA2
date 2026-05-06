@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>WOLF LABS | The Case File (A2)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Fonts: Special Elite (Typewriter), Playfair Display (Headers), Inter (Readability) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === THE CASE FILE (VINTAGE NOIR THEME) === */
+        :root {
+            /* Photophobia Friendly: Deep charcoal, warm amber, muted paper */
+            --bg-desk: #1c1917;        /* Stone 900 - Deep charcoal background */
+            --bg-folder: #292524;      /* Stone 800 - Dark brownish-gray for cards */
+            --bg-paper: #44403c;       /* Stone 700 - Lighter for nested elements */
+            --accent-amber: #d97706;   /* Amber 600 - Desk lamp glow */
+            --accent-gold: #fbbf24;    /* Amber 400 - Highlight */
+            --accent-red: #dc2626;     /* Red 600 - Classified Stamps / Errors */
+            --text-main: #fef08a;      /* Yellow 200 - Soft parchment text */
+            --text-muted: #a8a29e;     /* Stone 400 - Muted secondary text */
+            --text-dark: #1c1917;      /* Dark text for inverse elements */
+            --shadow-noir: 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-desk);
+            color: var(--text-main);
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            /* Subtle paper/noise texture */
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(217, 119, 6, 0.05) 0%, transparent 80%),
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+        }
+
+        h1, h2, h3, .font-noir { font-family: 'Playfair Display', serif; }
+        .font-typewriter { font-family: 'Special Elite', cursive; }
+
+        /* HUD TOP */
+        #hud-top {
+            position: fixed; top: 0; left: 0; right: 0; padding: 15px 30px;
+            background: rgba(28, 25, 23, 0.9);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(217, 119, 6, 0.2);
+            z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .hud-bar-container { width: 120px; height: 6px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; border: 1px solid rgba(217,119,6,0.1);}
+        .hud-bar-fill { height: 100%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px currentColor;}
+
+        /* CONTENT ARENA */
+        #mission-arena { height: 100vh; padding-bottom: 120px; padding-top: 60px; }
+
+        /* DOSSIER PANELS (Cards) */
+        .dossier-card {
+            background-color: var(--bg-folder);
+            border-radius: 4px; /* Sharp paper-like edges */
+            padding: 3rem;
+            box-shadow: var(--shadow-noir);
+            position: relative;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        /* Paperclip effect */
+        .dossier-card::after {
+            content: ''; position: absolute; top: 15px; right: 30px; width: 12px; height: 40px;
+            border: 3px solid #888; border-radius: 10px; background: transparent; transform: rotate(15deg);
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5); z-index: 10; pointer-events: none;
+        }
+
+        /* BUTTONS */
+        .btn-amber {
+            background: linear-gradient(135deg, #f59e0b, #d97706); color: var(--text-dark); border-radius: 2px;
+            font-family: 'Special Elite', cursive; font-size: 1.1rem; text-transform: uppercase;
+            letter-spacing: 0.05em; transition: all 0.2s ease; border: none; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.2);
+        }
+        .btn-amber:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4); filter: brightness(1.1);}
+        .btn-amber:active { transform: scale(0.96); }
+
+        .btn-red {
+            background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border-radius: 2px;
+            font-family: 'Special Elite', cursive; font-size: 1.1rem; text-transform: uppercase;
+            letter-spacing: 0.05em; transition: all 0.2s ease; border: none; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.2);
+        }
+        .btn-red:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4); filter: brightness(1.1);}
+        .btn-red:active { transform: scale(0.96); }
+
+        .btn-outline {
+            background: var(--bg-paper); border: 1px solid var(--text-muted); color: var(--text-main); border-radius: 2px;
+            font-family: 'Special Elite', cursive; font-size: 1.1rem; text-transform: uppercase;
+            letter-spacing: 0.05em; transition: all 0.2s ease; cursor: pointer;
+        }
+        .btn-outline:hover { border-color: var(--accent-amber); color: var(--accent-amber); background: rgba(217,119,6,0.1); transform: translateY(-1px); }
+
+        /* SLIDER (Instinct Meter) */
+        input[type=range].cute-slider { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range].cute-slider:focus { outline: none; }
+        input[type=range].cute-slider::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: var(--bg-paper); border-radius: 4px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
+        input[type=range].cute-slider::-webkit-slider-thumb { -webkit-appearance: none; height: 32px; width: 16px; border-radius: 2px; background: var(--accent-amber); cursor: pointer; margin-top: -12px; box-shadow: 0 0 15px rgba(217, 119, 6, 0.5); transition: transform 0.2s; border: 1px solid #fff; }
+        input[type=range].cute-slider::-webkit-slider-thumb:hover { transform: scale(1.1); }
+
+        /* POLAROID EVIDENCE CARDS (Vocab) */
+        .polaroid-card { perspective: 1000px; cursor: pointer; }
+        .polaroid-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+        .polaroid-card.flipped .polaroid-inner { transform: rotateY(180deg); }
+        .polaroid-front, .polaroid-back {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem;
+            background-color: #d6d3d1; /* Stone 300 - Off white paper */ border-radius: 2px; box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+        }
+        .polaroid-front { padding-bottom: 3rem; }
+        .polaroid-image { width: 100%; aspect-ratio: 1/1; background: #292524; margin-bottom: 1rem; display: flex; items-center; justify-content: center; font-size: 4rem; color: var(--accent-amber); border: 1px solid rgba(0,0,0,0.2); box-shadow: inset 0 0 20px rgba(0,0,0,0.8);}
+        .polaroid-caption { font-family: 'Special Elite', cursive; font-size: 1.5rem; color: #1c1917; font-weight: bold; position: absolute; bottom: 10px; width: 100%; text-align: center;}
+        .polaroid-back { background: var(--bg-folder); border: 1px solid var(--accent-amber); color: var(--text-main); transform: rotateY(180deg); }
+
+        /* THE TYPEWRITER (Word Builder) */
+        .type-key { background-color: #1c1917; min-width: 50px; padding: 0 15px; height: 50px; border-radius: 25px; font-weight: 700; cursor: pointer; transition: all 0.1s; display: flex; align-items: center; justify-content: center; border: 2px solid #44403c; color: var(--text-main); font-family: 'Special Elite', cursive; box-shadow: 0 4px 0 #000, 0 5px 10px rgba(0,0,0,0.5); text-transform: lowercase; font-size: 1.2rem;}
+        .type-key:hover { background-color: var(--bg-paper); border-color: var(--accent-amber); color: var(--accent-amber);}
+        .type-key:active { transform: translateY(4px); box-shadow: 0 0 0 #000; }
+        .type-key.used { opacity: 0; pointer-events: none; transform: scale(0.5); }
+        .type-paper { min-height: 100px; background: #d6d3d1; border-radius: 2px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: flex-start; padding: 20px; width: 100%; max-width: 800px; margin: 0 auto; box-shadow: inset 0 2px 10px rgba(0,0,0,0.2); font-family: 'Special Elite', cursive; border-top: 10px solid #292524;}
+        .type-word { color: #1c1917; font-size: 1.5rem; font-weight: 700; cursor: default; animation: typeIn 0.1s ease; border-bottom: 2px solid transparent;}
+        @keyframes typeIn { 0% { opacity: 0; transform: translateY(-5px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        /* THE SUSPECT BOARD (Match Maker) */
+        .corkboard { background-color: #57463f; border: 12px solid #3d2b24; border-radius: 8px; padding: 2rem; box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 2rem;}
+        .pin-card { background: #fef08a; color: #1c1917; padding: 1rem 1.5rem; font-family: 'Special Elite', cursive; font-size: 1.2rem; font-weight: bold; position: relative; cursor: pointer; transition: all 0.2s; box-shadow: 2px 4px 10px rgba(0,0,0,0.5); transform: rotate(-1deg);}
+        .pin-card::before { content: ''; position: absolute; top: 5px; left: 50%; transform: translateX(-50%); width: 12px; height: 12px; border-radius: 50%; background: #dc2626; box-shadow: -1px 2px 2px rgba(0,0,0,0.5); z-index: 10;}
+        .pin-card:hover:not(.matched) { transform: scale(1.05) rotate(1deg); z-index: 20; }
+        .pin-card.active { border: 2px solid var(--accent-red); background: #fef9c3; }
+        .pin-card.matched { background: #d6d3d1; color: #78716c; pointer-events: none; opacity: 0.8; }
+        .pin-card.matched::before { background: #78716c; }
+
+        /* THE INTERROGATION TAPE (Reading/Reader) */
+        .tape-recorder { background: #1c1917; border-radius: 12px; padding: 2rem; border: 1px solid #44403c; display: flex; flex-direction: column; gap: 1rem; box-shadow: inset 0 0 20px rgba(0,0,0,0.8);}
+        .tape-reels { display: flex; justify-content: center; gap: 2rem; margin-bottom: 1rem; border-bottom: 2px solid #292524; padding-bottom: 1rem;}
+        .reel { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #44403c; position: relative; animation: spin 4s linear infinite; }
+        .reel::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; background: #44403c; border-radius: 50%; }
+        .reel::before { content: ''; position: absolute; top: 10px; bottom: 10px; left: 50%; width: 2px; background: #44403c; transform: translateX(-50%); }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .transcript-box { background: #d6d3d1; color: #1c1917; padding: 1.5rem; font-family: 'Special Elite', cursive; font-size: 1.2rem; line-height: 1.6; border-radius: 4px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.2); max-height: 300px; overflow-y: auto;}
+
+        /* THE LIE DETECTOR (Bamboozle) */
+        .polygraph-container { text-align: center; }
+        .polygraph-paper { background: #fef08a; width: 100%; max-width: 600px; margin: 0 auto; min-height: 150px; padding: 2rem; font-family: 'Special Elite', cursive; color: #1c1917; font-size: 1.8rem; font-weight: bold; position: relative; border-left: 20px solid #fff; border-right: 20px solid #fff; box-shadow: 0 10px 20px rgba(0,0,0,0.5); overflow: hidden;}
+        /* Graph line effect */
+        .polygraph-paper::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: rgba(220,38,38,0.2); pointer-events: none;}
+        .lie-stamp { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-10deg) scale(3); opacity: 0; color: var(--accent-red); font-family: 'Inter', sans-serif; font-weight: 900; font-size: 4rem; border: 8px solid var(--accent-red); padding: 10px 20px; border-radius: 8px; text-transform: uppercase; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none;}
+        .truth-stamp { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(5deg) scale(3); opacity: 0; color: #16a34a; font-family: 'Inter', sans-serif; font-weight: 900; font-size: 4rem; border: 8px solid #16a34a; padding: 10px 20px; border-radius: 8px; text-transform: uppercase; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none;}
+        .polygraph-paper.stamped-lie .lie-stamp { opacity: 0.8; transform: translate(-50%, -50%) rotate(-10deg) scale(1); }
+        .polygraph-paper.stamped-truth .truth-stamp { opacity: 0.8; transform: translate(-50%, -50%) rotate(5deg) scale(1); }
+
+        /* THE ALIBI SHIFT (Tuner Toggle) */
+        .tuner-checkbox:checked + .tuner-label { background-color: var(--accent-amber); border-color: var(--accent-amber); }
+        .tuner-checkbox:checked + .tuner-label .tuner-knob { transform: translateX(100%); background-color: var(--bg-desk); box-shadow: -2px 0 5px rgba(0,0,0,0.3);}
+        .tuner-checkbox:not(:checked) + .tuner-label { background-color: var(--bg-paper); border-color: var(--text-muted); }
+        .tuner-checkbox:not(:checked) + .tuner-label .tuner-knob { background-color: var(--text-main); box-shadow: 2px 0 5px rgba(0,0,0,0.3);}
+
+        /* THE FIXER (Redacted Notes) */
+        .redacted-word { background-color: #1c1917; color: #1c1917; cursor: pointer; transition: all 0.2s; padding: 0 4px; border-radius: 2px; }
+        .redacted-word:hover { background-color: var(--accent-amber); color: var(--bg-desk); }
+        .redacted-fixed { background-color: transparent; color: var(--accent-amber); pointer-events: none; border-bottom: 2px solid var(--accent-amber); font-weight: bold;}
+
+        /* MCQ DATA ROWS */
+        .mcq-row {
+            background: var(--bg-paper); border: 1px solid rgba(255,255,255,0.05); border-radius: 4px; transition: all 0.2s ease;
+            cursor: pointer; display: flex; align-items: center; padding: 1.2rem 1.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-family: 'Special Elite', cursive; font-size: 1.2rem;
+        }
+        .mcq-row:hover:not(.locked-check) { border-color: var(--accent-amber); transform: translateX(5px); background: rgba(217,119,6,0.1); }
+        .mcq-row.correct { background: rgba(22, 163, 74, 0.1); border-color: #16a34a; color: #16a34a; }
+        .mcq-row.wrong { background: rgba(220, 38, 38, 0.1); border-color: var(--accent-red); color: #fca5a5; }
+
+        /* SPEAKING STARTERS */
+        .starter-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; opacity: 0; }
+        .starter-content.open { max-height: 300px; opacity: 1; margin-top: 1.5rem; }
+
+        /* FOOTER CONSOLE */
+        #nav-console {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
+            background: rgba(28, 25, 23, 0.95); border-top: 1px solid rgba(217, 119, 6, 0.2);
+            display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 5000; box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
+        }
+
+        /* DRAWERS */
+        .drawer { background: var(--bg-folder); color: var(--text-main); border-left: 1px solid var(--accent-amber); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); z-index: 5100; box-shadow: -20px 0 50px rgba(0,0,0,0.9);}
+        .drawer.active { transform: translateX(0); }
+
+        .fade-in { animation: fadeIn 0.4s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: var(--bg-paper); border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-desk); }
+
+        /* EFFECTS */
+        #confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
+        .shake { animation: shake 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(3px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-5px, 0, 0); } 40%, 60% { transform: translate3d(5px, 0, 0); } }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden text-base">
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- HUD SUPERIOR -->
+    <div id="hud-top" class="hidden justify-between items-center w-full">
+        <div class="flex items-center gap-10">
+            <div class="flex flex-col gap-1">
+                <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest font-typewriter">Evidence (HP)</span>
+                <div class="hud-bar-container"><div id="hp-bar" class="hud-bar-fill bg-[var(--accent-amber)]" style="width: 100%;"></div></div>
+            </div>
+            <div class="flex flex-col gap-1">
+                <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest font-typewriter">Logic (XP)</span>
+                <div class="hud-bar-container"><div id="xp-bar" class="hud-bar-fill bg-[var(--accent-red)]" style="width: 0%;"></div></div>
+            </div>
+        </div>
+        <div class="text-right flex items-center gap-6">
+            <button onclick="toggleTeacherHUD()" class="px-4 py-1.5 bg-transparent border border-white/20 rounded text-[10px] uppercase tracking-widest text-[var(--text-muted)] hover:text-white hover:border-white transition-all font-bold font-typewriter"><i class="fas fa-user-secret mr-2"></i>Chief</button>
+            <div>
+                <p class="font-noir text-xl font-black text-[var(--accent-amber)] tracking-widest leading-none uppercase">WOLF LABS</p>
+                <p class="text-[9px] font-bold text-gray-500 tracking-[0.3em] uppercase mt-1 font-typewriter">A2 Department</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAINEL PRINCIPAL (CAPA) -->
+    <main id="dashboard" class="flex flex-col items-center relative px-8 pt-16 pb-48 z-10 w-full h-screen overflow-y-auto">
+        <button onclick="toggleFullscreen()" class="absolute top-6 right-8 text-gray-600 hover:text-[var(--accent-amber)] text-2xl z-50 transition-colors" title="Fullscreen"><i class="fas fa-expand"></i></button>
+        <div class="max-w-4xl w-full flex flex-col items-center text-center space-y-6 animate-in fade-in my-auto pb-10">
+            
+            <div class="dossier-card p-6 mb-4 mt-10 inline-block rotate-[-2deg] border-t-4 border-[var(--accent-red)] shadow-[0_0_50px_rgba(220,38,38,0.15)]">
+                <div class="w-32 h-32 bg-[var(--bg-desk)] rounded-sm flex items-center justify-center overflow-hidden border border-gray-700 shadow-inner">
+                    <i class="fas fa-fingerprint text-6xl text-[var(--text-muted)] opacity-50"></i>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-[var(--accent-red)] font-bold text-sm tracking-[0.5em] uppercase font-typewriter border border-[var(--accent-red)]/30 px-5 py-2 rounded-sm bg-[var(--accent-red)]/5 shadow-sm inline-block">Classified Document</p>
+                <h1 class="text-6xl md:text-8xl font-black text-[var(--text-main)] leading-none tracking-tight font-noir uppercase drop-shadow-md">THE CASE <br> <span class="text-[var(--accent-amber)] italic">FILE</span></h1>
+                <p class="text-xl text-[var(--text-muted)] font-medium mt-6 max-w-2xl mx-auto">Analyze alibis, uncover evidence, and master the Past Continuous to solve the mystery.</p>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-3 font-typewriter mt-4">
+                <span class="px-4 py-1.5 bg-[var(--bg-paper)] border border-gray-600 text-[10px] font-bold uppercase tracking-widest text-gray-300 rounded-sm shadow-sm">Investigation Vocab</span>
+                <span class="px-4 py-1.5 bg-amber-900/20 border border-[var(--accent-amber)]/30 text-[10px] font-bold uppercase tracking-widest text-[var(--accent-amber)] rounded-sm shadow-sm">Past Continuous</span>
+                <span class="px-4 py-1.5 bg-red-900/20 border border-[var(--accent-red)]/30 text-[10px] font-bold uppercase tracking-widest text-[var(--accent-red)] rounded-sm shadow-sm">When vs While</span>
+            </div>
+            
+            <button onclick="startMission()" class="mt-12 btn-amber px-14 py-5 text-lg mb-10 shadow-[0_0_30px_rgba(217,119,6,0.2)]">
+                Open Dossier
+            </button>
+        </div>
+    </main>
+
+    <!-- ARENA DE CONTEÚDO DA LIÇÃO -->
+    <main id="mission-arena" class="hidden flex-grow flex-col overflow-hidden relative mt-16">
+        <div id="mission-content" class="flex-grow overflow-y-auto px-6 py-12 flex flex-col items-center w-full"></div>
+    </main>
+
+    <!-- CONSOLA DE NAVEGAÇÃO -->
+    <footer id="nav-console" class="hidden flex justify-between items-center w-full font-typewriter">
+        <div class="flex items-center gap-6 w-1/4">
+            <button onclick="goHome()" class="text-gray-500 hover:text-[var(--accent-red)] transition-colors"><i class="fas fa-power-off text-xl"></i></button>
+            <div class="flex flex-col">
+                <span id="console-title" class="text-[12px] font-bold text-white uppercase tracking-widest truncate">A2</span>
+                <span id="console-type" class="text-[9px] font-bold text-[var(--accent-amber)] uppercase tracking-widest">Case #01</span>
+            </div>
+        </div>
+        <div class="flex flex-col items-center gap-4 w-1/2">
+            <div class="flex items-center gap-12">
+                <button onclick="prevStep()" class="text-gray-500 hover:text-white transition-colors"><i class="fas fa-chevron-left text-2xl"></i></button>
+                <span id="console-counter" class="text-[10px] font-bold text-gray-400 tracking-[0.4em] uppercase">FILE 01</span>
+                <button onclick="nextStep()" class="text-gray-500 hover:text-[var(--accent-amber)] transition-all hover:scale-110"><i class="fas fa-chevron-right text-2xl"></i></button>
+            </div>
+            <div class="w-64 h-1 bg-gray-800 overflow-hidden border border-gray-700">
+                <div id="progress-bar" class="h-full bg-[var(--accent-amber)] transition-all duration-300 shadow-[0_0_10px_rgba(217,119,6,0.8)]" style="width: 0%;"></div>
+            </div>
+        </div>
+        <div class="flex items-center justify-end gap-6 w-1/4">
+            <button onclick="toggleWhiteboard()" class="text-gray-500 hover:text-[var(--accent-amber)] transition-colors" title="Notepad"><i class="fas fa-edit text-lg"></i></button>
+            <button onclick="toggleFullscreen()" class="text-gray-500 hover:text-white transition-colors" title="Fullscreen"><i class="fas fa-expand text-lg"></i></button>
+            <button onclick="toggleLessonNavigator()" class="text-gray-500 hover:text-[var(--accent-amber)] transition-colors" title="Index"><i class="fas fa-folder text-lg"></i></button>
+        </div>
+    </footer>
+
+    <!-- GAVETAS LATERAIS (DRAWERS) -->
+    <aside id="whiteboard" class="fixed right-0 top-0 h-screen w-[450px] drawer flex flex-col pt-20 z-[5100]">
+        <div class="p-8 border-b border-gray-700 flex justify-between items-center bg-[var(--bg-desk)]">
+            <h2 class="font-typewriter text-xl font-bold text-white tracking-widest"><i class="fas fa-pencil-alt text-[var(--accent-amber)] mr-3"></i>Detective Notes</h2>
+            <button onclick="toggleWhiteboard()" class="text-gray-500 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+        </div>
+        <div class="p-4 bg-[var(--bg-folder)] flex flex-wrap gap-2 border-b border-gray-700 font-typewriter">
+            <button onclick="insertTag('[SUSPECT]')" class="text-[10px] bg-[var(--bg-paper)] border border-gray-600 text-gray-300 px-3 py-1.5 rounded-sm hover:bg-[var(--accent-red)] hover:text-white transition-all font-bold uppercase tracking-widest shadow-sm">Suspect</button>
+            <button onclick="insertTag('[ALIBI]')" class="text-[10px] bg-[var(--bg-paper)] border border-gray-600 text-gray-300 px-3 py-1.5 rounded-sm hover:bg-[var(--accent-amber)] hover:text-[var(--bg-desk)] transition-all font-bold uppercase tracking-widest shadow-sm">Alibi</button>
+        </div>
+        <textarea id="wb-text" class="flex-grow bg-[#221f1e] text-[var(--text-main)] p-8 resize-none focus:outline-none font-typewriter text-lg leading-relaxed" placeholder="Document the clues here..."></textarea>
+    </aside>
+
+    <aside id="lesson-navigator" class="fixed right-0 top-0 h-screen w-80 drawer flex flex-col pt-20 z-[5100]">
+        <div class="p-8 border-b border-gray-700 text-white font-bold uppercase tracking-widest flex justify-between items-center text-sm font-typewriter bg-[var(--bg-desk)]">Archive <button onclick="toggleLessonNavigator()"><i class="fas fa-times text-gray-500 hover:text-white"></i></button></div>
+        <div id="nav-steps-list" class="flex-grow overflow-y-auto p-4 space-y-2 bg-[var(--bg-folder)] font-typewriter"></div>
+    </aside>
+
+    <aside id="teacher-hud" class="fixed right-0 top-0 h-screen w-[350px] drawer flex flex-col pt-20 z-[5100]">
+        <div class="p-8 border-b border-gray-700 flex justify-between items-center bg-[var(--bg-desk)]">
+            <h2 class="font-typewriter text-xl font-bold text-[var(--accent-amber)] tracking-widest uppercase"><i class="fas fa-user-secret mr-2"></i> Chief</h2>
+            <button onclick="toggleTeacherHUD()"><i class="fas fa-times text-xl text-gray-500 hover:text-white"></i></button>
+        </div>
+        <div class="flex-grow overflow-y-auto p-8 space-y-8 bg-[var(--bg-folder)]">
+            <div class="bg-amber-900/20 p-6 rounded-sm border border-[var(--accent-amber)]/30 shadow-sm">
+                <p class="text-[10px] font-bold text-[var(--accent-amber)] uppercase tracking-widest mb-3 font-typewriter">Case Objective</p>
+                <p class="text-sm text-gray-300 leading-relaxed font-inter">Level A2. Teach the Past Continuous (I was doing) vs Past Simple (I did). Connectors 'When' and 'While'. Use police investigation vocabulary (Alibi, Suspect, Witness).</p>
+            </div>
+            <div>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 font-typewriter">Send Assessment</p>
+                <div class="space-y-3 font-typewriter">
+                    <button onclick="triggerPraise('SOLID ALIBI', 'Good grammar.')" class="w-full py-4 bg-[var(--bg-paper)] text-[var(--accent-amber)] border border-gray-600 rounded-sm font-bold text-xs hover:border-[var(--accent-amber)] hover:text-white transition-all tracking-widest shadow-sm uppercase">SEND: AMBER (GOOD)</button>
+                    <button onclick="triggerPraise('CASE SOLVED', 'Perfect investigation.')" class="w-full py-4 bg-[var(--bg-paper)] text-[#16a34a] border border-gray-600 rounded-sm font-bold text-xs hover:border-[#16a34a] hover:text-white transition-all tracking-widest shadow-sm uppercase">SEND: GREEN (GREAT)</button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Overlay de Elogio -->
+    <div id="praise-overlay" class="fixed inset-0 z-[6000] flex items-center justify-center bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div id="praise-card" class="dossier-card p-16 text-center transform scale-50 transition-transform duration-500 border-2">
+            <h2 id="praise-main" class="font-noir text-5xl md:text-7xl font-black tracking-widest uppercase mb-4 drop-shadow-md text-[#16a34a]"></h2>
+            <p id="praise-sub" class="text-xl font-bold tracking-widest uppercase mt-6 opacity-80 text-white font-typewriter"></p>
+        </div>
+    </div>
+
+    <!-- SCRIPT DO MOTOR PRINCIPAL -->
+    <script>
+        // --- ESTADO DO SISTEMA ---
+        let state = { hp: 100, xp: 0, current: 0 };
+        const esc = (s) => s ? s.replace(/'/g, "\\'").replace(/"/g, "&quot;") : "";
+        
+        const TYPES = { COVER: "Briefing", WARMUP: "Instincts", VOCAB: "Evidence", GRAMMAR: "Protocol", DRILL: "Polygraph", TUNER: "Alibi", BUILDER: "Report", MATCH: "Corkboard", READER: "Transcript", SPEAKING: "Interrogation", WRAP: "Verdict" };
+
+        function step(type, title, html) { return { type, title, html }; }
+
+        function updateHUD() {
+            const h = document.getElementById('hp-bar'); if(h) h.style.width = Math.max(0, state.hp) + '%';
+            // XP Max is scaled for 25 pages
+            const x = document.getElementById('xp-bar'); if(x) x.style.width = Math.min(100, (state.xp / 65) * 100) + '%';
+        }
+
+        function insertTag(tag) { 
+            const text = document.getElementById('wb-text'); 
+            if (text) { text.value += (text.value.length > 0 ? '\n' : '') + tag + ' '; text.focus(); } 
+        }
+
+        // --- TEMPLATES TEMÁTICOS (VINTAGE NOIR) ---
+        
+        const bGuide = (title, points) => step(TYPES.COVER, title, `
+            <div class="max-w-4xl mx-auto space-y-10 animate-in fade-in py-10">
+                <div class="dossier-card border-t-8 border-[var(--accent-red)]">
+                    <p class="text-[var(--accent-red)] font-bold uppercase tracking-[0.4em] text-[10px] mb-6 flex items-center gap-3 font-typewriter">
+                        <i class="fas fa-folder-open text-lg"></i> WOLF LABS | Top Secret
+                    </p>
+                    <h2 class="font-noir text-4xl md:text-5xl font-black text-white tracking-widest leading-none mb-10 pb-8 border-b border-gray-700 uppercase">${title}</h2>
+                    <div class="space-y-6 font-typewriter">
+                        ${points.map(p => `<p class="text-xl text-[var(--text-main)] font-medium leading-relaxed flex items-start gap-4"><i class="fas fa-check text-[var(--accent-amber)] text-[16px] mt-1.5 opacity-80"></i> ${p}</p>`).join('')}
+                    </div>
+                </div>
+            </div>
+        `);
+
+        const bSlider = (title, prompt, optA, optB, questions, starters) => step(TYPES.WARMUP, title, `
+            <div class="max-w-5xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center space-y-12 animate-in fade-in">
+                <p class="text-[10px] font-bold text-[var(--accent-amber)] uppercase tracking-[0.4em] mb-2 bg-[var(--bg-folder)] px-5 py-2 rounded-sm border border-gray-700 shadow-sm font-typewriter">Instinct Check</p>
+                <h2 class="font-noir text-4xl md:text-5xl font-black text-white tracking-widest leading-tight">${prompt}</h2>
+                
+                <div class="w-full max-w-3xl dossier-card py-16 flex flex-col items-center mt-8 border-t-2 border-[var(--accent-amber)]">
+                    <div class="flex justify-between w-full px-8 mb-12 text-5xl">
+                        <span class="opacity-70 hover:opacity-100 hover:text-[var(--accent-amber)] transition-all hover:scale-110 drop-shadow-md cursor-pointer" title="Trusting"><i class="fas fa-handshake text-gray-500"></i></span>
+                        <span class="opacity-70 hover:opacity-100 hover:text-[var(--accent-red)] transition-all hover:scale-110 drop-shadow-md cursor-pointer" title="Suspicious"><i class="fas fa-search text-[var(--accent-red)]"></i></span>
+                    </div>
+                    <div class="w-full px-12 relative">
+                        <div class="absolute left-12 right-12 top-1/2 -translate-y-1/2 h-[1px] bg-gradient-to-r from-gray-600 via-gray-500 to-[var(--accent-red)] opacity-50 pointer-events-none"></div>
+                        <input type="range" min="0" max="100" value="50" class="cute-slider">
+                    </div>
+                    <div class="flex justify-between w-full px-8 mt-12 text-xs font-bold text-gray-500 uppercase tracking-widest font-typewriter">
+                        <span>${optA}</span>
+                        <span class="text-[var(--accent-red)]">${optB}</span>
+                    </div>
+                </div>
+
+                <div class="w-full max-w-4xl p-8 mt-8 text-left border-l-4 border-[var(--accent-amber)] bg-[var(--bg-folder)] shadow-sm border-y border-r border-gray-800 flex flex-col md:flex-row gap-10">
+                    <div class="flex-1">
+                        <p class="text-[10px] font-bold text-[var(--accent-amber)] uppercase tracking-widest mb-6 font-typewriter">Interrogation Prep</p>
+                        <div class="space-y-5">
+                            ${questions.map(q => `<p class="text-xl font-bold text-white leading-snug font-inter"><i class="fas fa-question-circle text-[var(--text-muted)] mr-3 opacity-60"></i>${q}</p>`).join('')}
+                        </div>
+                    </div>
+                    <div class="flex-1 border-t md:border-t-0 md:border-l border-gray-700 pt-6 md:pt-0 md:pl-10">
+                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-6 font-typewriter">Speaking Starters</p>
+                        <div class="space-y-6">
+                            ${starters.map(s => `<p class="text-2xl font-bold text-[var(--text-muted)] font-typewriter">"${s}"</p>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `);
+
+        // Polaroids for Vocab
+        function bEvidenceCards(title, words) {
+            const nodesHtml = words.map((w, i) => {
+                const rotation = (i % 2 === 0) ? '-rotate-3' : 'rotate-3';
+                return `
+                <div class="polaroid-card w-[260px] h-[320px] ${rotation}" onclick="this.classList.toggle('flipped')">
+                    <div class="polaroid-inner">
+                        <div class="polaroid-front">
+                            <div class="polaroid-image">
+                                <i class="${w.icon}"></i>
+                            </div>
+                            <span class="polaroid-caption">${w.word}</span>
+                        </div>
+                        <div class="polaroid-back">
+                            <p class="text-[var(--accent-amber)] text-[10px] font-bold uppercase tracking-widest mb-4 border-b border-gray-600 pb-2 w-full text-center font-typewriter">Definition</p>
+                            <div class="w-full h-full flex flex-col justify-center items-center bg-[var(--bg-desk)] p-5 border border-gray-700 shadow-inner">
+                                <p class="text-white text-xl font-bold mb-4 leading-snug font-inter">${w.def}</p>
+                                <p class="text-[var(--text-main)] text-xl font-typewriter italic">"${w.ex}"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+
+            return step(TYPES.VOCAB, title, `
+                <div class="max-w-6xl mx-auto flex flex-col items-center py-10 animate-in fade-in">
+                    <div class="text-center mb-16">
+                        <p class="text-[10px] font-bold text-[var(--accent-amber)] uppercase tracking-[0.4em] mb-4 bg-[var(--bg-folder)] inline-block px-5 py-2 border border-gray-700 shadow-sm font-typewriter"><i class="fas fa-camera mr-2"></i> Crime Scene Photos</p>
+                        <h2 class="font-noir text-5xl font-black text-white tracking-widest uppercase">${title}</h2>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-12">
+                        ${nodesHtml}
+                    </div>
+                </div>
+            `);
+        }
+
+        const bGrammar = (title, rule, examples, tagColor="var(--accent-amber)") => step(TYPES.GRAMMAR, title, `
+            <div class="max-w-5xl mx-auto space-y-10 animate-in fade-in py-10">
+                <div class="text-center space-y-4 mb-16">
+                    <p class="text-[10px] font-bold text-[var(--bg-desk)] uppercase tracking-[0.5em] mb-4 inline-block px-5 py-2 shadow-sm font-typewriter font-bold" style="background-color: ${tagColor}">Police Protocol</p>
+                    <h2 class="font-noir text-5xl md:text-6xl font-black text-white tracking-widest uppercase">${title}</h2>
+                </div>
+                <div class="dossier-card mb-12 border-l-8" style="border-left-color: ${tagColor}">
+                    <p class="text-2xl text-[var(--text-main)] font-medium leading-relaxed font-inter">${rule.replace(/\[(.*?)\]/g, `<span style="color: ${tagColor}" class="font-bold">$1</span>`)}</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                    ${examples.map(ex => `
+                        <div class="bg-[var(--bg-paper)] border border-gray-600 p-10 rounded-sm shadow-md text-center hover:border-gray-400 transition-colors">
+                            <p class="text-[10px] font-bold uppercase text-gray-400 tracking-widest mb-6 font-typewriter">${ex.context}</p>
+                            <p class="text-2xl font-bold text-white leading-tight font-typewriter">"${ex.text.replace(/\[(.*?)\]/g, `<span style="color: ${tagColor}">$1</span>`)}"</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `);
+
+        // The Alibi Shift (Tuner)
+        const bTuner = (id, title, instruction, textAff, textAlt, feedback, tagColor="var(--accent-amber)") => step(TYPES.TUNER, title, `
+            <div class="max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center space-y-12 animate-in fade-in">
+                <p class="text-[10px] font-bold text-[var(--bg-desk)] uppercase tracking-[0.4em] mb-2 px-5 py-2 shadow-sm font-typewriter" style="background-color: ${tagColor}">Alibi Verification</p>
+                <h2 class="font-noir text-4xl md:text-5xl font-black text-white tracking-widest leading-tight uppercase">${title}</h2>
+                <p class="text-xl text-[var(--text-muted)] font-bold max-w-2xl font-inter">${instruction}</p>
+                
+                <div class="w-full max-w-3xl dossier-card flex flex-col items-center py-16 border-t-4" style="border-top-color: ${tagColor}">
+                    <div class="flex items-center gap-8 mb-16">
+                        <span class="font-bold text-white tracking-widest text-lg w-32 text-right uppercase font-typewriter" id="mode-aff-${id}">Habit</span>
+                        <div class="relative inline-block w-24 h-8 align-middle select-none">
+                            <input type="checkbox" id="tuner-switch-${id}" class="tuner-checkbox absolute block w-6 h-6 rounded-full opacity-0 z-10 w-full h-full cursor-pointer" onchange="toggleTuner('${id}', this, '${esc(textAff)}', '${esc(textAlt)}', '${esc(feedback)}', '${tagColor}')">
+                            <label for="tuner-switch-${id}" class="tuner-label block overflow-hidden h-8 rounded-full bg-[var(--bg-paper)] border border-gray-500 cursor-pointer transition-colors duration-300">
+                                <span class="tuner-knob absolute block w-6 h-6 m-1 bg-white rounded-full transition-transform duration-300 ease-in-out shadow-sm"></span>
+                            </label>
+                        </div>
+                        <span class="font-bold text-gray-500 tracking-widest text-lg w-32 text-left uppercase font-typewriter" id="mode-alt-${id}">Alibi</span>
+                    </div>
+
+                    <div class="bg-[#d6d3d1] w-full p-10 flex items-center justify-center min-h-[140px] border border-gray-400 shadow-inner">
+                        <p id="tuner-text-${id}" class="text-3xl font-bold tracking-wide transition-opacity duration-300 font-typewriter text-[#1c1917] leading-relaxed">${textAff.replace(/\[(.*?)\]/g, `<span style="color: #b45309" class="underline decoration-wavy">$1</span>`)}</p>
+                    </div>
+                    
+                    <div id="tuner-fb-${id}" class="hidden mt-10 font-bold text-lg font-typewriter text-gray-400">
+                        > ${feedback}
+                    </div>
+                </div>
+            </div>
+        `);
+
+        // The Typewriter Report (Word Builder)
+        function bTypewriterBuilder(id, title, instruction, expectedArr) {
+            const expectedStr = JSON.stringify(expectedArr).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            let wordBtns = shuffleArray([...expectedArr]).map(w => `<span class="type-key" onclick="moveTypeWord(this, '${esc(w)}', '${id}')">${w}</span>`).join('');
+            return step(TYPES.BUILDER, title, `
+                <div class="max-w-4xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in" data-expected="${expectedStr}" id="wb-data-${id}">
+                    <p class="text-[10px] font-bold text-white uppercase tracking-[0.4em] mb-4 bg-[var(--bg-paper)] px-5 py-2 border border-gray-600 shadow-sm font-typewriter">Typewriter</p>
+                    <h2 class="font-noir text-4xl md:text-5xl font-black text-white tracking-widest mb-8 text-center uppercase">${title}</h2>
+                    <p class="text-[var(--text-muted)] font-medium text-xl mb-12 text-center font-inter">${instruction}</p>
+                    
+                    <div class="w-full dossier-card text-center pb-16">
+                        <div class="type-paper" id="wb-dropzone-${id}"></div>
+                        <div class="flex justify-center flex-wrap gap-4 mt-16 max-w-2xl mx-auto" id="wb-bank-${id}">
+                            ${wordBtns}
+                        </div>
+                        <button onclick="resetWb('${id}')" class="mt-16 text-xs font-bold text-gray-500 hover:text-[var(--accent-amber)] uppercase tracking-widest transition font-typewriter"><i class="fas fa-undo mr-2"></i>Tear Paper</button>
+                    </div>
+                    <div id="wb-fb-${id}" class="hidden mt-8 p-6 bg-[var(--bg-paper)] text-[var(--accent-gold)] font-bold font-typewriter text-xl border border-[var(--accent-gold)]/50 shadow-lg uppercase tracking-widest">> Report Typed</div>
+                </div>
+            `);
+        }
+
+        // The Suspect Board (Match Maker)
+        function bSuspectBoard(title, instruction, pairs) {
+            let lefts = pairs.map((p, i) => ({text: p.left, id: i, type: 'L'}));
+            let rights = pairs.map((p, i) => ({text: p.right, id: i, type: 'R'}));
+            for (let i = lefts.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [lefts[i], lefts[j]] = [lefts[j], lefts[i]]; }
+            for (let i = rights.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [rights[i], rights[j]] = [rights[j], rights[i]]; }
+
+            const buildNodes = (arr) => arr.map(item => `
+                <div class="pin-card" data-id="${item.id}" data-type="${item.type}" onclick="handleMatch(this)">
+                    ${item.text}
+                </div>
+            `).join('');
+
+            return step(TYPES.MATCH, title, `
+                <div class="max-w-5xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in">
+                    <p class="text-[10px] font-bold text-[var(--bg-desk)] uppercase tracking-[0.4em] mb-6 font-typewriter bg-[var(--accent-red)] px-5 py-2 shadow-sm">Evidence Board</p>
+                    <h2 class="font-noir text-5xl font-black text-white tracking-widest mb-8 text-center uppercase">${title}</h2>
+                    <p class="text-[var(--text-muted)] text-lg font-medium mb-12 text-center">${instruction}</p>
+                    
+                    <div class="w-full max-w-4xl corkboard relative" id="match-board">
+                        <div class="grid grid-cols-2 gap-16 w-full">
+                            <div class="flex flex-col gap-8" id="match-left">${buildNodes(lefts)}</div>
+                            <div class="flex flex-col gap-8" id="match-right">${buildNodes(rights)}</div>
+                        </div>
+                    </div>
+                    <div id="match-hub" class="hidden mt-12 text-[var(--accent-red)] font-typewriter font-bold text-xl bg-[var(--bg-paper)] p-6 shadow-lg border border-[var(--accent-red)] uppercase tracking-widest">> All evidence connected.</div>
+                </div>
+            `);
+        }
+
+        // Interrogation Tape (Reader)
+        const bInterrogationTape = (id, title, suspect, lines) => {
+            const html = lines.map(l => `
+                <p class="mb-4"><strong class="${l.s === 'Det.' ? 'text-[#b45309]' : 'text-[#1c1917]'}">${l.s}:</strong> ${l.t}</p>
+            `).join('');
+
+            return step(TYPES.READER, title, `
+            <div class="max-w-4xl mx-auto flex flex-col items-center py-10 animate-in fade-in">
+                <p class="text-[10px] font-bold text-gray-300 uppercase tracking-[0.4em] mb-4 bg-gray-800 px-5 py-2 border border-gray-600 shadow-sm font-typewriter"><i class="fas fa-microphone-alt mr-2"></i> Audio Transcript</p>
+                <h2 class="font-noir text-4xl md:text-5xl font-black text-white tracking-widest uppercase mb-8 text-center">${title}</h2>
+                
+                <div class="w-full max-w-2xl tape-recorder">
+                    <div class="tape-reels">
+                        <div class="reel"></div>
+                        <div class="reel"></div>
+                    </div>
+                    <p class="font-typewriter text-xs text-gray-500 uppercase tracking-widest mb-2 border-b border-gray-700 pb-2">Subject: ${suspect}</p>
+                    <div class="transcript-box">
+                        ${html}
+                    </div>
+                </div>
+                <p class="mt-8 text-[var(--text-muted)] font-medium text-lg font-inter">Read the transcript to verify the alibi.</p>
+            </div>
+        `)};
+
+        // Cross-Examination (MCQ)
+        const bCrossExamination = (id, title, prompt, refText, options, correctIdx) => step(TYPES.DRILL, title, `
+            <div class="max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-in fade-in">
+                <p class="text-[10px] font-bold text-[var(--bg-desk)] uppercase tracking-[0.4em] mb-2 border border-[var(--accent-amber)] bg-[var(--accent-amber)] px-5 py-2 font-typewriter">Cross-Examination</p>
+                <h2 class="font-noir text-3xl md:text-4xl font-black text-white tracking-widest leading-tight uppercase">${prompt}</h2>
+                
+                <button onclick="toggleConsultText('${id}')" class="btn-outline px-6 py-2 text-xs tracking-widest mt-4"><i class="fas fa-eye mr-2"></i> Review Transcript</button>
+
+                <div id="consult-text-${id}" class="hidden w-full max-w-2xl bg-[#d6d3d1] border-l-8 border-[#b45309] p-6 text-left shadow-lg transition-all mb-4 mt-6">
+                    <p class="text-[10px] font-bold text-[#b45309] uppercase tracking-[0.3em] mb-3 font-typewriter">Excerpt</p>
+                    <p class="text-lg text-[#1c1917] leading-relaxed font-typewriter">"${refText}"</p>
+                </div>
+
+                <div class="w-full max-w-2xl space-y-4 mt-8" id="quiz-options-${id}">
+                    ${options.map((opt, i) => `
+                        <div class="mcq-row locked-check group" onclick="handleQuizTrial('${id}', this, ${i === correctIdx}, '', '')">
+                            <div class="w-10 h-10 border border-gray-600 bg-[var(--bg-desk)] flex items-center justify-center text-sm font-bold text-gray-400 mr-5 font-typewriter group-hover:border-[var(--accent-amber)] transition-colors">${String.fromCharCode(65 + i)}</div>
+                            <span class="text-xl font-bold text-white text-left font-typewriter tracking-wide">${opt}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `);
+
+        // Lie Detector (Bamboozle)
+        const bLieDetector = (title, statement1, statement2) => step(TYPES.DRILL, title, `
+            <div class="max-w-5xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in polygraph-container">
+                <p class="text-[10px] font-bold text-white uppercase tracking-[0.4em] mb-6 border border-gray-600 px-5 py-2 bg-[var(--bg-paper)] shadow-sm font-typewriter"><i class="fas fa-heartbeat mr-2 text-[var(--accent-red)]"></i> Polygraph Test</p>
+                <h2 class="font-noir text-5xl font-black text-white tracking-widest mb-16 text-center uppercase">${title}</h2>
+                
+                <div id="bamb-q1" class="w-full mb-12">
+                    <div class="polygraph-paper" id="poly-paper-1">
+                        <p class="relative z-10">"${statement1.text.replace(/\[(.*?)\]/g, '<span class="text-[#b45309] underline decoration-wavy">$1</span>')}"</p>
+                        <div class="lie-stamp">LIE</div>
+                        <div class="truth-stamp">TRUTH</div>
+                    </div>
+                    <div class="flex gap-6 justify-center mt-8">
+                        <button class="btn-outline px-10 py-3 text-lg hover:border-[#16a34a] hover:text-[#16a34a] hover:bg-[#16a34a]/10" onclick="checkLieDetector(1, ${statement1.isTrue}, true)">TRUTH (Correct)</button>
+                        <button class="btn-outline px-10 py-3 text-lg hover:border-[var(--accent-red)] hover:text-[var(--accent-red)] hover:bg-[var(--accent-red)]/10" onclick="checkLieDetector(1, ${statement1.isTrue}, false)">LIE (Error)</button>
+                    </div>
+                </div>
+                
+                <div id="bamb-q2" class="hidden w-full mb-12">
+                    <div class="polygraph-paper" id="poly-paper-2">
+                        <p class="relative z-10">"${statement2.text.replace(/\[(.*?)\]/g, '<span class="text-[#b45309] underline decoration-wavy">$1</span>')}"</p>
+                        <div class="lie-stamp">LIE</div>
+                        <div class="truth-stamp">TRUTH</div>
+                    </div>
+                    <div class="flex gap-6 justify-center mt-8">
+                        <button class="btn-outline px-10 py-3 text-lg hover:border-[#16a34a] hover:text-[#16a34a] hover:bg-[#16a34a]/10" onclick="checkLieDetector(2, ${statement2.isTrue}, true)">TRUTH (Correct)</button>
+                        <button class="btn-outline px-10 py-3 text-lg hover:border-[var(--accent-red)] hover:text-[var(--accent-red)] hover:bg-[var(--accent-red)]/10" onclick="checkLieDetector(2, ${statement2.isTrue}, false)">LIE (Error)</button>
+                    </div>
+                </div>
+                
+                <div id="bamb-fb" class="hidden mt-4 p-4 bg-[var(--bg-paper)] text-[var(--text-main)] border border-gray-500 font-bold text-lg font-typewriter text-center shadow-lg px-12">> POLYGRAPH COMPLETE.</div>
+            </div>
+        `);
+
+        // Redacted Notes (Fixer)
+        const bRedactedNotes = (title, text, expectedFixes) => {
+            let expectedFixesCopy = [...expectedFixes]; 
+            let htmlText = text.replace(/\[(.*?)\]/g, (match, word) => {
+                const fixData = expectedFixesCopy.shift();
+                return `<span class="redacted-word" onclick="triggerFixer(this, '${esc(fixData)}')">${word}</span>`;
+            });
+
+            return step(TYPES.DRILL, title, `
+                <div class="max-w-4xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in">
+                    <p class="text-[10px] font-bold text-white uppercase tracking-[0.4em] mb-4 bg-[var(--accent-red)] px-5 py-2 shadow-sm font-typewriter">Syntax Error</p>
+                    <h2 class="font-noir text-4xl md:text-5xl font-black text-white tracking-widest mb-8 text-center uppercase">${title}</h2>
+                    <p class="text-[var(--text-muted)] text-lg mb-10 text-center font-inter">The intern's notes have grammar mistakes. Click the <span class="bg-[#1c1917] text-white px-2 py-1 font-typewriter">black blocks</span> to correct the verbs.</p>
+                    
+                    <div class="w-full dossier-card relative overflow-hidden text-2xl leading-relaxed text-[#1c1917] font-typewriter bg-[#d6d3d1] border-none shadow-[inset_0_0_40px_rgba(0,0,0,0.2)]">
+                        <div class="p-4">
+                            ${htmlText}
+                        </div>
+                        
+                        <div id="fix-panel" class="absolute bottom-0 left-0 w-full bg-[#292524] border-t border-[var(--accent-amber)] p-6 transform translate-y-full transition-transform duration-300 flex items-center gap-4 z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.8)]">
+                            <span class="text-[var(--accent-amber)] font-bold text-sm uppercase tracking-widest font-typewriter">Correction:</span>
+                            <input type="text" id="fix-input" class="bg-[#1c1917] text-white border border-gray-600 px-4 py-3 flex-1 text-xl focus:outline-none focus:border-[var(--accent-amber)] font-typewriter" autocomplete="off" placeholder="Type past continuous verb...">
+                            <button onclick="submitFixer()" class="btn-amber px-8 py-3 text-sm">Update</button>
+                        </div>
+                    </div>
+                    <div id="fixer-hub" class="hidden mt-8 text-[var(--accent-amber)] font-typewriter font-bold text-sm tracking-widest uppercase">> Notes corrected.</div>
+                </div>
+            `);
+        }
+
+        const bRoleplay = (title, prompt, hint) => step(TYPES.SPEAKING, title, `
+            <div class="max-w-4xl mx-auto w-full flex flex-col items-center justify-center min-h-[60vh] text-center animate-in fade-in py-10 relative">
+                <div class="w-32 h-32 bg-[var(--bg-folder)] border border-gray-600 rounded-full flex items-center justify-center mb-8 shadow-xl"><i class="fas fa-user-secret text-6xl text-[var(--accent-amber)]"></i></div>
+                <p class="text-[10px] font-bold text-[var(--bg-desk)] uppercase tracking-[0.4em] mb-4 bg-[var(--accent-amber)] px-5 py-2 font-typewriter shadow-sm">Interrogation Room</p>
+                <h2 class="font-noir text-5xl md:text-6xl font-black tracking-widest text-white leading-tight mb-12 uppercase">${prompt}</h2>
+                
+                <div class="w-full dossier-card text-left border-l-4 border-[var(--accent-amber)]">
+                    <div class="flex justify-between items-center cursor-pointer" onclick="toggleStarter(this)">
+                        <div class="flex items-center gap-4">
+                            <i class="fas fa-lightbulb text-[var(--accent-amber)] text-3xl"></i>
+                            <span class="font-bold text-white tracking-widest uppercase text-xl font-typewriter">Case Notes (Click)</span>
+                        </div>
+                        <i class="fas fa-chevron-down text-gray-500"></i>
+                    </div>
+                    <div class="starter-content text-left">
+                        <div class="bg-[var(--bg-paper)] p-8 mt-6 border border-gray-600 shadow-inner">
+                            <p class="text-2xl font-bold text-[var(--text-main)] leading-relaxed font-typewriter">"${hint}"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `);
+
+        const bWrap = () => step(TYPES.WRAP, "Case Closed", `
+            <div class="text-center max-w-3xl mx-auto flex flex-col items-center justify-center min-h-[60vh] animate-in fade-in">
+                <div class="w-40 h-40 bg-[#57463f] mx-auto flex items-center justify-center text-7xl text-[#1c1917] mb-10 shadow-[0_0_40px_rgba(0,0,0,0.8)] border border-gray-600">
+                    <i class="fas fa-folder-closed"></i>
+                </div>
+                <h1 class="font-noir text-6xl md:text-8xl font-black text-white tracking-widest mb-6 uppercase">Case Closed</h1>
+                <p class="text-xl text-[var(--text-muted)] mb-16 font-medium font-inter">You have mastered the Past Continuous and solved the mystery.</p>
+                <button onclick="goHome()" class="btn-amber px-12 py-4 text-sm tracking-widest">Return to Precinct</button>
+            </div>
+        `);
+
+        // --- LESSON DATA (Exactly 25 Steps) ---
+        const lessonData = [
+            bGuide("The Case File", [
+                "Level: A2.", 
+                "Topic: Crime & Investigation Vocabulary.",
+                "Grammar: Past Continuous (What were you doing?).",
+                "Grammar: Past Simple vs Past Continuous (When / While)."
+            ]),
+            
+            bSlider("Detective Instincts", "Are you a trusting person?", "Trusting", "Suspicious", 
+                [
+                    "Do you usually believe what strangers tell you?",
+                    "Have you ever caught someone in a lie?",
+                    "What makes someone look suspicious to you?"
+                ],
+                [
+                    "I usually trust people, but...",
+                    "Once, I caught my friend...",
+                    "I think someone is suspicious when..."
+                ]
+            ),
+
+            bEvidenceCards("Crime Scene Vocab", [
+                {icon: "fas fa-user-secret", word: "Suspect", def: "A person who the police think did the crime.", ex: "He is the main suspect."},
+                {icon: "fas fa-eye", word: "Witness", def: "A person who saw the crime happen.", ex: "The witness saw everything."}
+            ]),
+
+            bEvidenceCards("Investigation Vocab", [
+                {icon: "fas fa-search", word: "Evidence", def: "Clues or proof that show what happened.", ex: "We found new evidence."},
+                {icon: "fas fa-clock", word: "Alibi", def: "Proof that you were somewhere else during the crime.", ex: "My alibi is my sister."}
+            ]),
+
+            bGrammar("The Alibi (Past Continuous)", "To talk about actions that were in progress at a specific time in the past, use [Was / Were] + [Verb-ING].", [
+                {context: "I / He / She / It", text: "He [was sleeping] at 9 PM."},
+                {context: "You / We / They", text: "They [were playing] cards."}
+            ], "var(--accent-amber)"),
+
+            bTuner("tun1", "Alibi Shift", "Change the habit into a past excuse.", "I [sleep] early.", "I [was sleeping] early.", "Notice: I was + sleeping", "var(--accent-amber)"),
+            
+            bTuner("tun2", "Alibi Shift II", "Change the habit into a past excuse.", "She [watches] TV.", "She [was watching] TV.", "Notice: She was + watching", "var(--accent-amber)"),
+
+            bTypewriterBuilder("wb1", "Type The Report", "Build the suspect's alibi.", ["he", "was", "sleeping", "at", "nine", "p.m.", "."]),
+
+            bGrammar("The Interruption", "We often use the Past Continuous to say what we were doing [WHEN] something suddenly interrupted us (Past Simple).", [
+                {context: "Background Action (Continuous)", text: "I [was sleeping]..."},
+                {context: "Interruption (Simple)", text: "...[when] the phone [rang]."}
+            ], "var(--accent-red)"),
+
+            bSuspectBoard("Connecting the Clues", "Connect the background action to the interruption using the red threads.", [
+                {left: "I was driving", right: "when it started to rain."},
+                {left: "She was cooking", right: "when the lights went out."},
+                {left: "We were sleeping", right: "when the alarm rang."}
+            ]),
+
+            bInterrogationTape("tape1", "Suspect #1: The Baker", "Mr. Arthur", [
+                {s: "Det.", t: "Where were you last night at 10 PM?"},
+                {s: "Arthur", t: "I was in my kitchen. I was baking a cake."},
+                {s: "Det.", t: "Did you see anything suspicious?"},
+                {s: "Arthur", t: "No. I was baking when the lights went out suddenly. It was completely dark."}
+            ]),
+
+            bLieDetector("Polygraph: Suspect 1", 
+                {text: "He was baking when the lights went out.", isTrue: true}, 
+                {text: "He baked when the lights were going out.", isTrue: false} // Grammar test
+            ),
+
+            bRedactedNotes("Fixing the Notes", "The intern wrote the report wrong. Fix the verbs.", [
+                "Suspect 1 says he [was bake] a cake. The lights [goes] out."
+            ], ["was baking", "went"]),
+
+            bInterrogationTape("tape2", "Suspect #2: The Banker", "Mrs. Smith", [
+                {s: "Det.", t: "Mrs. Smith, what were you doing yesterday at 10 PM?"},
+                {s: "Smith", t: "I was reading a book in my living room."},
+                {s: "Det.", t: "Was anyone with you?"},
+                {s: "Smith", t: "My husband. I was reading while he was cooking dinner."}
+            ]),
+
+            bCrossExamination("rq1", "Cross-examination", "What was Mrs. Smith doing?", "I was reading a book in my living room.", ["She was cooking.", "She was reading.", "She was sleeping."], 1),
+
+            bGrammar("Parallel Actions", "If two actions are happening at the SAME TIME in the past, we use Past Continuous for both, connected by [WHILE].", [
+                {context: "Action 1", text: "I [was reading]..."},
+                {context: "Action 2", text: "...[while] he [was cooking]."}
+            ], "var(--text-muted)"),
+
+            bTypewriterBuilder("wb2", "Type The Report II", "Build the parallel sentence.", ["she", "was", "reading", "while", "he", "was", "cooking", "."]),
+
+            bSuspectBoard("Connecting the Clues II", "Match the correct connector.", [
+                {left: "The phone rang", right: "WHEN I was sleeping."},
+                {left: "I was eating", right: "WHILE she was talking."},
+                {left: "The lights went out", right: "WHEN he was baking."}
+            ]),
+
+            bRedactedNotes("Fixing the Notes II", "Fix the connectors in the report.", [
+                "Mrs. Smith was reading [when] her husband was cooking."
+            ], ["while"]),
+
+            bLieDetector("Polygraph: Logic Check", 
+                {text: "We use 'While' for an interruption.", isTrue: false}, 
+                {text: "We use 'When' before the Past Simple interruption.", isTrue: true}
+            ),
+
+            bRoleplay("The Detective", "You are the detective. Ask your teacher questions.", "> 'Where were you yesterday at 10 PM? What were you doing when the lights went out?'"),
+            
+            bRoleplay("The Suspect", "Now you are the suspect. Defend your alibi.", "> 'I am innocent! I was watching TV when... My alibi is...'"),
+
+            bWrap()
+        ];
+
+        // --- RUNTIME LOGIC ---
+        function toggleElementClass(id, action, className) {
+            const el = document.getElementById(id);
+            if (el) {
+                if (action === 'add') el.classList.add(className);
+                else if (action === 'remove') el.classList.remove(className);
+            }
+        }
+
+        function startMission() {
+            toggleElementClass('dashboard', 'add', 'hidden'); toggleElementClass('dashboard', 'remove', 'flex');
+            toggleElementClass('hud-top', 'remove', 'hidden'); toggleElementClass('hud-top', 'add', 'flex');
+            toggleElementClass('mission-arena', 'remove', 'hidden'); toggleElementClass('mission-arena', 'add', 'flex');
+            toggleElementClass('nav-console', 'remove', 'hidden'); toggleElementClass('nav-console', 'add', 'flex');
+            buildLessonNavigator(); renderStep();
+        }
+
+        function goHome() {
+            toggleElementClass('dashboard', 'remove', 'hidden'); toggleElementClass('dashboard', 'add', 'flex');
+            toggleElementClass('hud-top', 'add', 'hidden'); toggleElementClass('hud-top', 'remove', 'flex');
+            toggleElementClass('mission-arena', 'add', 'hidden'); toggleElementClass('mission-arena', 'remove', 'flex');
+            toggleElementClass('nav-console', 'add', 'hidden'); toggleElementClass('nav-console', 'remove', 'flex');
+            state.current = 0; updateHUD();
+            document.getElementById('lesson-navigator')?.classList.remove('active');
+            document.getElementById('teacher-hud')?.classList.remove('active');
+            document.getElementById('whiteboard')?.classList.remove('active');
+        }
+
+        function renderStep() {
+            if (!lessonData || !lessonData[state.current]) return;
+            const step = lessonData[state.current];
+            const sCount = document.getElementById('console-counter'); if(sCount) sCount.innerText = `FILE ${String(state.current + 1).padStart(2, '0')}/${lessonData.length}`;
+            const content = document.getElementById('mission-content'); if(content) content.innerHTML = `<div class="w-full max-w-7xl mx-auto">${step.html}</div>`;
+            updateHUD();
+            
+            const navList = document.getElementById('nav-steps-list');
+            if (navList) {
+                Array.from(navList.children).forEach((btn, i) => {
+                    if(i === state.current) { btn.classList.add('bg-[var(--bg-paper)]', 'text-[var(--accent-amber)]', 'border-l-4', 'border-[var(--accent-amber)]'); btn.classList.remove('text-gray-400'); } 
+                    else { btn.classList.remove('bg-[var(--bg-paper)]', 'text-[var(--accent-amber)]', 'border-l-4', 'border-[var(--accent-amber)]'); btn.classList.add('text-gray-400'); }
+                });
+            }
+            if (step.type === TYPES.BUILDER) setTimeout(setupWb, 100);
+        }
+
+        function nextStep() { if (state.current < lessonData.length - 1) { state.current++; renderStep(); } else { goHome(); } }
+        function prevStep() { if (state.current > 0) { state.current--; renderStep(); } }
+        
+        function toggleLessonNavigator() { document.getElementById('lesson-navigator').classList.toggle('active'); document.getElementById('teacher-hud')?.classList.remove('active'); document.getElementById('whiteboard')?.classList.remove('active');}
+        function toggleTeacherHUD() { document.getElementById('teacher-hud').classList.toggle('active'); document.getElementById('lesson-navigator')?.classList.remove('active'); document.getElementById('whiteboard')?.classList.remove('active');}
+        function toggleWhiteboard() { document.getElementById('whiteboard').classList.toggle('active'); document.getElementById('lesson-navigator')?.classList.remove('active'); document.getElementById('teacher-hud')?.classList.remove('active');}
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(err => console.log(err)); } 
+            else { if (document.exitFullscreen) document.exitFullscreen(); }
+        }
+
+        function toggleStarter(btn) {
+            const content = btn.nextElementSibling;
+            if (content.classList.contains('open')) { content.classList.remove('open'); } else { content.classList.add('open'); }
+        }
+
+        // --- MINIGAMES LOGIC ---
+
+        function handleQuizTrial(id, row, isCorrect, followup, starter) {
+            if(row.classList.contains('locked-check')) {
+                const parent = row.parentElement; 
+                Array.from(parent.children).forEach(child => { child.onclick = null; child.classList.add('opacity-40', 'cursor-default'); child.classList.remove('locked-check');});
+                row.classList.remove('opacity-40'); 
+                
+                if(isCorrect) {
+                    row.classList.add('correct'); state.xp += 3; updateHUD(); shootConfetti();
+                    const fBox = document.getElementById(`followup-box-${id}`); if(fBox && followup) fBox.classList.remove('hidden');
+                } else { row.classList.add('wrong'); state.hp -= 10; updateHUD(); }
+            }
+        }
+
+        function toggleTuner(id, checkbox, textAff, textAlt, feedback, tagColor) {
+            const textEl = document.getElementById(`tuner-text-${id}`);
+            const aff = document.getElementById(`mode-aff-${id}`);
+            const alt = document.getElementById(`mode-alt-${id}`);
+            textEl.style.opacity = 0;
+            setTimeout(() => {
+                if(checkbox.checked) {
+                    aff.classList.replace('text-white', 'text-gray-500'); alt.classList.replace('text-gray-500', 'text-white');
+                    textEl.innerHTML = textAlt.replace(/\[(.*?)\]/g, `<span style="color: ${tagColor}" class="underline decoration-wavy">$1</span>`); 
+                    document.getElementById(`tuner-fb-${id}`).classList.remove('hidden');
+                } else {
+                    aff.classList.replace('text-gray-500', 'text-white'); alt.classList.replace('text-white', 'text-gray-500');
+                    textEl.innerHTML = textAff.replace(/\[(.*?)\]/g, `<span style="color: ${tagColor}" class="underline decoration-wavy">$1</span>`); 
+                    document.getElementById(`tuner-fb-${id}`).classList.add('hidden');
+                }
+                textEl.style.opacity = 1;
+            }, 200);
+        }
+
+        let activeBug = null; let expectedFix = "";
+        function triggerFixer(el, answer) {
+            if(el.classList.contains('redacted-fixed')) return;
+            activeBug = el; expectedFix = answer;
+            const panel = document.getElementById('fix-panel'); panel.classList.remove('translate-y-full');
+            document.getElementById('fix-input').value = ''; document.getElementById('fix-input').focus();
+        }
+        function submitFixer() {
+            const input = document.getElementById('fix-input').value.trim().toLowerCase();
+            const panel = document.getElementById('fix-panel');
+            if(input === expectedFix.toLowerCase()) {
+                activeBug.innerText = expectedFix; activeBug.classList.remove('redacted-word'); activeBug.classList.add('redacted-fixed');
+                panel.classList.add('translate-y-full');
+                const container = activeBug.closest('.dossier-card');
+                const remaining = container.querySelectorAll('.redacted-word').length;
+                if(remaining === 0) { shootConfetti(); state.xp += 5; updateHUD(); document.getElementById('fixer-hub').classList.remove('hidden');}
+            } else {
+                const inputEl = document.getElementById('fix-input'); inputEl.classList.add('shake', 'border-[var(--accent-red)]');
+                state.hp -= 10; updateHUD();
+                setTimeout(() => inputEl.classList.remove('shake', 'border-[var(--accent-red)]'), 400);
+            }
+        }
+        document.getElementById('fix-input')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitFixer(); });
+
+        let wbState = {};
+        function setupWb() {
+            document.querySelectorAll('[id^="wb-data-"]').forEach(el => {
+                const id = el.id.replace('wb-data-', '');
+                const expectedData = el.getAttribute('data-expected');
+                wbState[id] = { current: [], expected: JSON.parse(expectedData) };
+            });
+        }
+        function moveTypeWord(pill, word, id) {
+            if(pill.classList.contains('used')) return;
+            if(!wbState[id]) return;
+            wbState[id].current.push(word); pill.classList.add('used');
+            const dz = document.getElementById(`wb-dropzone-${id}`);
+            const newPill = document.createElement('span'); newPill.className = 'type-word'; 
+            newPill.innerText = word + (wbState[id].current.length === wbState[id].expected.length || word === '.' ? '' : ' '); 
+            dz.appendChild(newPill);
+            if(wbState[id].current.length === wbState[id].expected.length) {
+                let win = wbState[id].current.every((val, index) => val === wbState[id].expected[index]);
+                if(win) { document.getElementById(`wb-fb-${id}`).classList.remove('hidden'); updateHUD(); shootConfetti(); }
+                else { dz.parentElement.classList.add('shake', 'border-[var(--accent-red)]'); setTimeout(() => dz.parentElement.classList.remove('shake', 'border-[var(--accent-red)]'), 400); }
+            }
+        }
+        function resetWb(id) {
+            if(!wbState[id]) return;
+            wbState[id].current = []; document.getElementById(`wb-dropzone-${id}`).innerHTML = ''; document.getElementById(`wb-fb-${id}`).classList.add('hidden');
+            document.getElementById(`wb-bank-${id}`).querySelectorAll('.type-key').forEach(p => p.classList.remove('used'));
+        }
+
+        let activeMatch = null; let matchesMatched = 0;
+        function handleMatch(node) {
+            if (node.classList.contains('matched')) return;
+            if (!activeMatch) {
+                activeMatch = node; node.classList.add('active');
+            } else {
+                if (activeMatch.dataset.type !== node.dataset.type && activeMatch.dataset.id === node.dataset.id) {
+                    activeMatch.classList.replace('active', 'matched'); node.classList.add('matched');
+                    activeMatch = null; matchesMatched++; state.xp += 2; updateHUD();
+                    const totalPairs = document.getElementById('match-board').children[0].children.length;
+                    if(matchesMatched === totalPairs) { document.getElementById('match-hub').classList.remove('hidden'); shootConfetti(); matchesMatched = 0; }
+                } else {
+                    activeMatch.classList.remove('active'); activeMatch.classList.add('shake', 'border-[var(--accent-red)]', 'text-[var(--accent-red)]'); node.classList.add('shake', 'border-[var(--accent-red)]', 'text-[var(--accent-red)]');
+                    state.hp -= 10; updateHUD();
+                    setTimeout(() => { activeMatch.classList.remove('shake', 'border-[var(--accent-red)]', 'text-[var(--accent-red)]'); node.classList.remove('shake', 'border-[var(--accent-red)]', 'text-[var(--accent-red)]'); activeMatch = null; }, 400);
+                }
+            }
+        }
+
+        function checkLieDetector(q, isTrueStatement, isSayingTruth) {
+            const paper = document.getElementById(`poly-paper-${q}`);
+            // isSayingTruth means user clicked TRUTH
+            if(isSayingTruth === isTrueStatement) {
+                // Correctly identified
+                paper.classList.add('stamped-truth');
+                if(q === 1) document.getElementById('bamb-q2').classList.remove('hidden');
+                else { document.getElementById('bamb-fb').classList.remove('hidden'); shootConfetti(); }
+            } else {
+                // Incorrectly identified
+                paper.classList.add('stamped-lie');
+                paper.parentElement.classList.add('shake');
+                setTimeout(() => {
+                    paper.parentElement.classList.remove('shake');
+                    paper.classList.remove('stamped-lie');
+                }, 1000);
+            }
+        }
+
+        function toggleConsultText(id) {
+            const el = document.getElementById(`consult-text-${id}`);
+            if (el.classList.contains('hidden')) { el.classList.remove('hidden'); el.classList.add('animate-in', 'fade-in'); } 
+            else { el.classList.add('hidden'); }
+        }
+
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId); curId -= 1;
+                let tmp = array[curId]; array[curId] = array[randId]; array[randId] = tmp;
+            }
+            return array;
+        }
+
+        function buildLessonNavigator() {
+            const list = document.getElementById('nav-steps-list'); if (!list) return;
+            list.innerHTML = '';
+            lessonData.forEach((step, i) => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-3 rounded-sm flex items-center gap-3 transition-all font-typewriter text-sm ${i === state.current ? 'bg-[var(--bg-paper)] text-[var(--accent-amber)] font-bold border-l-4 border-[var(--accent-amber)] shadow-sm' : 'text-gray-400 hover:bg-gray-800'}`;
+                btn.innerHTML = `<span class="w-6 opacity-50 font-bold">${i+1}</span><div class="flex flex-col truncate"><span class="truncate">${step.title}</span></div>`;
+                btn.onclick = () => { state.current = i; renderStep(); toggleLessonNavigator(); };
+                list.appendChild(btn);
+            });
+        }
+
+        function triggerPraise(main, sub) {
+            document.getElementById('teacher-hud')?.classList.remove('active'); 
+            const overlay = document.getElementById('praise-overlay'); const card = document.getElementById('praise-card');
+            
+            if(main === 'SOLID ALIBI') {
+                document.getElementById('praise-main').className = "font-noir text-5xl md:text-7xl font-black tracking-widest uppercase mb-4 drop-shadow-md text-[var(--accent-amber)]";
+            } else {
+                document.getElementById('praise-main').className = "font-noir text-5xl md:text-7xl font-black tracking-widest uppercase mb-4 drop-shadow-md text-[#16a34a]";
+            }
+            
+            document.getElementById('praise-main').innerText = main; document.getElementById('praise-sub').innerText = sub;
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => card.classList.replace('scale-50', 'scale-100'), 50); shootConfetti();
+            setTimeout(() => { card.classList.replace('scale-100', 'scale-50'); overlay.classList.add('opacity-0', 'pointer-events-none'); }, 2500);
+        }
+
+        function shootConfetti() {
+            const cCanvas = document.getElementById('confetti-canvas'); const cCtx = cCanvas.getContext('2d');
+            cCanvas.width = window.innerWidth; cCanvas.height = window.innerHeight;
+            const pieces = []; const colors = ['#d97706', '#dc2626', '#fef08a', '#a8a29e'];
+            for(let i=0; i<60; i++) pieces.push({ x: cCanvas.width/2, y: cCanvas.height/2+100, vx: (Math.random()-0.5)*20, vy: (Math.random()-1)*20-5, size: Math.random()*8+4, color: colors[Math.floor(Math.random()*colors.length)], rot: Math.random()*360, rotSpeed: (Math.random()-0.5)*10 });
+            let animationId;
+            function animateC() {
+                cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height); let active = false;
+                pieces.forEach(p => {
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.5; p.rot += p.rotSpeed; if(p.y < cCanvas.height) active = true;
+                    cCtx.save(); cCtx.translate(p.x, p.y); cCtx.rotate(p.rot*Math.PI/180); cCtx.fillStyle = p.color; 
+                    // Square confetti for paper aesthetic
+                    cCtx.fillRect(-p.size/2, -p.size/2, p.size, p.size); cCtx.restore();
+                });
+                if(active) animationId = requestAnimationFrame(animateC); else cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height);
+            }
+            animateC();
+        }
+        
+        window.onload = () => { updateHUD(); buildLessonNavigator(); goHome(); };
+    </script>
+</body>
+</html>
